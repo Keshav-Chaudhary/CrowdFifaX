@@ -1,0 +1,86 @@
+openapi: 3.0.3
+info:
+  title: CrowdFifaX Internal API
+  version: 1.0.0
+  description: API specifications for CrowdFifaX AI and telemetry integrations.
+paths:
+  /api/assistant:
+    post:
+      summary: Stream an AI assistant reply.
+      description: Returns a Server-Sent Events (SSE) stream of markdown chunks representing the AI's response to the provided message and telemetry context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - history
+                - telemetry
+                - persona
+              properties:
+                message:
+                  type: string
+                history:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - role
+                      - content
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, assistant, system]
+                      content:
+                        type: string
+                telemetry:
+                  type: object
+                  properties:
+                    carbonKg:
+                      type: number
+                    activities:
+                      type: array
+                      items:
+                        type: object
+                persona:
+                  type: string
+                  enum: [fan, volunteer, organizer]
+      responses:
+        '200':
+          description: SSE stream of markdown chunks.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          description: Validation error.
+        '429':
+          description: Rate limit exceeded.
+        '500':
+          description: Internal server error (e.g. AI provider timeout).
+  /api/explain:
+    post:
+      summary: Analyze current telemetry state.
+      description: Provides a structured JSON breakdown of the given telemetry via the AI engine.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - telemetry
+              properties:
+                telemetry:
+                  type: object
+      responses:
+        '200':
+          description: Successful analysis.
+          content:
+            application/json:
+              schema:
+                type: object
+        '429':
+          description: Rate limit exceeded.

@@ -1,0 +1,393 @@
+@import "tailwindcss";
+
+/*
+ * ─────────────────────────────────────────────────────────────────────────
+ *  Carbon — design system
+ * ─────────────────────────────────────────────────────────────────────────
+ *  A restrained, dark-first interface. Hairline borders, layered near-black
+ *  surfaces, and a single disciplined green accent. No gradient text, no glow,
+ *  no glassmorphism noise — depth comes from contrast and 1px borders.
+ *
+ *  All foreground/background pairings are chosen to meet WCAG AA. Light mode
+ *  is a complete, deliberate override rather than an afterthought.
+ */
+
+:root {
+  /* ── Surfaces (dark, layered from base → raised) ── */
+  --bg: #0b0f19;
+  --bg-subtle: #111827;
+  --surface: #171e2e;
+  --surface-1: var(--surface);
+  --surface-2: #1e293b;
+  --surface-3: #334155;
+  --overlay: rgba(0, 0, 0, 0.7);
+
+  /* ── Text ── */
+  --fg: #f8fafc;
+  --fg-muted: #94a3b8;
+  --fg-subtle: #64748b;
+
+  /* ── Lines ── */
+  --border: #334155;
+  --border-strong: #475569;
+  --border-faint: #1e293b;
+
+  /* ── Accent: GenAI Stadium Indigo ── */
+  --accent: #6366f1; /* Vibrant Indigo */
+  --accent-strong: #4f46e5;
+  --accent-fg: #ffffff;
+  --accent-subtle: rgba(99, 102, 241, 0.12);
+  --accent-line: rgba(99, 102, 241, 0.25);
+
+  /* ── Semantic ── */
+  --positive: #34d399;
+  --positive-subtle: rgba(52, 211, 153, 0.12);
+  --caution: #fbbf24;
+  --caution-subtle: rgba(251, 191, 36, 0.12);
+  --critical: #f87171;
+  --critical-subtle: rgba(248, 113, 113, 0.12);
+  --neutral: #60a5fa;
+  --neutral-subtle: rgba(96, 165, 250, 0.12);
+
+  /* ── Category accents ── */
+  --cat-transport: #60a5fa;
+  --cat-energy: #fbbf24;
+  --cat-diet: #34d399;
+  --cat-shopping: #c084fc;
+
+  /* ── Material 3 Radii ── */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-full: 9999px;
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+
+  /* ── Typography ── */
+  --font-sans: var(--font-outfit), sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+:root[data-theme="light"] {
+  /* ── Surfaces (Ash/Carbon Light) ── */
+  --bg: #f4f4f5;
+  --bg-subtle: #e4e4e7;
+  --surface: #ffffff;
+  --surface-1: var(--surface);
+  --surface-2: #fafafa;
+  --surface-3: #f4f4f5;
+  --overlay: rgba(9, 9, 11, 0.6);
+
+  /* ── Text (Graphite/Charcoal) ── */
+  --fg: #18181b;
+  --fg-muted: #3f3f46;
+  --fg-subtle: #52525b;
+
+  /* ── Lines ── */
+  --border: #d4d4d8;
+  --border-strong: #a1a1aa;
+  --border-faint: #e4e4e7;
+
+  /* ── Accent: GenAI Stadium Indigo ── */
+  --accent: #4f46e5;
+  --accent-strong: #4338ca;
+  --accent-fg: #ffffff;
+  --accent-subtle: rgba(79, 70, 229, 0.1);
+  --accent-line: rgba(79, 70, 229, 0.25);
+
+  /* ── Semantic ── */
+  --positive: #27272a;
+  --positive-subtle: rgba(39, 39, 42, 0.1);
+  --caution: #92400e; /* amber-800 for 4.5+ contrast */
+  --caution-subtle: rgba(180, 83, 9, 0.1);
+  --critical: #991b1b;
+  --critical-subtle: rgba(153, 27, 27, 0.1);
+  --neutral: #1e40af;
+  --neutral-subtle: rgba(30, 64, 175, 0.1);
+
+  /* ── Category accents ── */
+  --cat-transport: #2563eb;
+  --cat-energy: #ea580c;
+  --cat-diet: #059669;
+  --cat-shopping: #9333ea;
+
+  /* ── Elevation ── */
+  --shadow-sm: 0 1px 3px rgba(9, 9, 11, 0.08), 0 1px 2px rgba(9, 9, 11, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(9, 9, 11, 0.08), 0 2px 4px -1px rgba(9, 9, 11, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(9, 9, 11, 0.08), 0 4px 6px -2px rgba(9, 9, 11, 0.04);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-surface-1: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-border-faint: var(--border-faint);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-fg: var(--accent-fg);
+  --color-positive: var(--positive);
+  --color-caution: var(--caution);
+  --color-critical: var(--critical);
+  --color-neutral: var(--neutral);
+  --color-cat-transport: var(--cat-transport);
+  --color-cat-energy: var(--cat-energy);
+  --color-cat-diet: var(--cat-diet);
+  --color-cat-shopping: var(--cat-shopping);
+
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-full: var(--r-full);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+/* ── Base ───────────────────────────────────────────── */
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+html {
+  /* Default to dark; the theme provider sets data-theme explicitly. */
+  color-scheme: dark;
+}
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-subtle);
+  color: var(--fg);
+}
+
+/* ── Numerals ───────────────────────────────────────── */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ── Focus ──────────────────────────────────────────── */
+/* Use Tailwind's focus:ring utilities per-component instead of a global forced outline. */
+/*
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+*/
+
+/* ── Animations (quiet, purposeful) ─────────────────── */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+@keyframes pulse-dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: var(--draw-length, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.custom-fade-in {
+  animation: fade-in 0.5s ease both;
+}
+.custom-rise {
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered rise for lists/grids. */
+.stagger > * {
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger > *:nth-child(5) { animation-delay: 0.5s; }
+.stagger > *:nth-child(6) { animation-delay: 0.6s; }
+
+/* Thinking indicator for the assistant. */
+.thinking-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.thinking-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.thinking-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ── Scrollbars ─────────────────────────────────────── */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.scroll-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-subtle);
+  background-clip: padding-box;
+}
+
+/* ── Reduced motion ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Accessibility helpers ──────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3.5rem;
+  z-index: 100;
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 var(--r-md) var(--r-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: top 0.15s ease;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Disclosure ─────────────────────────────────────── */
+details > summary {
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* ── Global Accessibility Enhancements ──────────────── */
+
+/* 1. Visually Impaired - Text Size Adjustments */
+html.a11y-text-lg {
+  font-size: 112.5% !important; /* +12.5% scale */
+}
+html.a11y-text-xl {
+  font-size: 125% !important; /* +25% scale */
+}
+
+/* 2. Dyslexia Font Override */
+html.a11y-dyslexic,
+html.a11y-dyslexic * {
+  font-family: 'Comic Sans MS', 'Dyslexic', sans-serif !important;
+}
+
+/* 3. High-Visibility Keyboard Focus Rings */
+html.a11y-high-focus *:focus-visible {
+  outline: 4px solid #facc15 !important; /* Bright Yellow outline */
+  outline-offset: 4px !important;
+  box-shadow: 0 0 0 8px #1e3a8a !important; /* Dark Blue contrast shadow */
+}
+
+/* 4. High Contrast override (no shadows, gradients or blur filters) */
+html.a11y-high-contrast * {
+  text-shadow: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  background-image: none !important;
+  border-color: var(--border) !important;
+}
