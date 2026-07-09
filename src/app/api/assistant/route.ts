@@ -59,6 +59,41 @@ function jsonError(message: string, status: number): Response {
   });
 }
 
+type SanitizedMessage = { role: "user" | "assistant"; content: string };
+type SanitizeResult =
+  | { ok: true; messages: SanitizedMessage[] }
+  | { ok: false; response: Response };
+
+/**
+ * Sanitize raw parsed messages and validate each user turn through PromptGuard.
+ * Returns either a clean message list or an error response ready to send.
+ */
+function sanitizeAndValidateMessages(
+  raw: { role: "user" | "assistant"; content: string }[],
+): SanitizeResult {
+  const sanitized = raw
+    .map((m) => ({ role: m.role, content: sanitizeText(m.content, MAX_USER_MESSAGE_LENGTH) }))
+    .filter((m) => m.content.length > 0);
+
+  if (sanitized.length === 0) {
+    return { ok: false, response: jsonError("Message content is empty after sanitization.", 400) };
+  }
+
+  for (const m of sanitized) {
+    if (m.role !== "user") continue;
+    try {
+      validatePrompt(m.content);
+    } catch (error) {
+      if (error instanceof PromptBlockedError) {
+        return { ok: false, response: jsonError(error.message, 400) };
+      }
+      throw error;
+    }
+  }
+
+  return { ok: true, messages: sanitized };
+}
+
 export async function POST(req: Request): Promise<Response> {
   if (!isAIEnabled()) {
     return jsonError(
@@ -88,32 +123,9 @@ export async function POST(req: Request): Promise<Response> {
     return jsonError(parsed.error.issues[0].message, 400);
   }
 
-  // Sanitize each message before it touches the prompt builder: strip control
-  // and invisible characters that can be used to obfuscate prompt injection.
-  const sanitizedMessages = parsed.data.messages
-    .map((chatMessage) => ({
-      role: chatMessage.role,
-      content: sanitizeText(chatMessage.content, MAX_USER_MESSAGE_LENGTH),
-    }))
-    .filter((chatMessage) => chatMessage.content.length > 0);
-
-  if (sanitizedMessages.length === 0) {
-    return jsonError("Message content is empty after sanitization.", 400);
-  }
-
-  // Validate prompts using PromptGuard to block prompt injection attacks.
-  try {
-    for (const chatMessage of sanitizedMessages) {
-      if (chatMessage.role === "user") {
-        validatePrompt(chatMessage.content);
-      }
-    }
-  } catch (error) {
-    if (error instanceof PromptBlockedError) {
-      return jsonError(error.message, 400);
-    }
-    throw error;
-  }
+  const sanitizeResult = sanitizeAndValidateMessages(parsed.data.messages);
+  if (!sanitizeResult.ok) return sanitizeResult.response;
+  const sanitizedMessages = sanitizeResult.messages;
 
   // Ground the model in the user's real, deterministically-computed footprint.
   const analysis = analyzeFootprint(parsed.data.activities);

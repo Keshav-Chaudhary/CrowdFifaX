@@ -10,7 +10,6 @@ export class AINotConfiguredError extends Error {
   }
 }
 
-
 /** Represents a single message in the OpenAI-style chat completion format. */
 interface CompletionMessage {
   role: string;
@@ -20,8 +19,49 @@ interface CompletionMessage {
 export const DEFAULT_TEMPERATURE = 0.6;
 export const DEFAULT_MAX_TOKENS = 800;
 
+function getAIConfigOrThrow(): AIConfig {
+  const config = getAIConfig();
+  if (!config) throw new AINotConfiguredError();
+  return config;
+}
+
 /**
- * Stream a chat completion from the DigitalOcean (OpenAI-compatible) endpoint,
+ * Attempt a single model request; yields SSE text chunks on success.
+ * Returns `false` if the HTTP response indicates failure (caller tries next).
+ * Throws on abort/network errors so the caller can record the last error.
+ */
+async function* tryModelStream(
+  model: string,
+  messages: CompletionMessage[],
+  config: AIConfig,
+  signal: AbortSignal,
+): AsyncGenerator<string, boolean, unknown> {
+  const response = await fetch(`${config.baseURL}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${config.apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      stream: true,
+      temperature: DEFAULT_TEMPERATURE,
+      max_tokens: DEFAULT_MAX_TOKENS,
+    }),
+    signal,
+  });
+
+  if (!response.ok || !response.body) {
+    return false;
+  }
+
+  yield* parseSSEStream(response.body);
+  return true;
+}
+
+/**
+ * Stream a chat completion from the configured (OpenAI-compatible) endpoint,
  * yielding text chunks as they arrive.
  *
  * Resilience: if the primary model errors before producing output, the next
@@ -38,32 +78,16 @@ export async function* streamChat(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
     try {
-      const response = await fetch(`${config.baseURL}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${config.apiKey}`,
-        },
-        body: JSON.stringify({
-          model,
-          messages,
-          stream: true,
-          temperature: DEFAULT_TEMPERATURE,
-          max_tokens: DEFAULT_MAX_TOKENS,
-        }),
-        signal: controller.signal,
-      });
-
-      if (!response.ok || !response.body) {
-        lastError = new Error(`Model ${model} returned HTTP ${response.status}`);
-        continue; // try the next fallback model
+      let succeeded = false;
+      const gen = tryModelStream(model, messages, config, controller.signal);
+      for await (const chunk of gen) {
+        if (typeof chunk === "string") yield chunk;
+        else succeeded = chunk;
       }
-
-      yield* parseSSEStream(response.body);
-      return; // completed successfully
+      if (succeeded) return;
+      lastError = new Error(`Model ${model} returned HTTP error`);
     } catch (error) {
       lastError = error;
-      continue;
     } finally {
       clearTimeout(timeout);
     }
@@ -74,12 +98,6 @@ export async function* streamChat(
       lastError instanceof Error ? lastError.message : String(lastError)
     }`,
   );
-}
-
-function getAIConfigOrThrow(): AIConfig {
-  const config = getAIConfig();
-  if (!config) throw new AINotConfiguredError();
-  return config;
 }
 
 /**

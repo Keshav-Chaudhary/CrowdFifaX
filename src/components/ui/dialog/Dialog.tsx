@@ -19,6 +19,44 @@ interface DialogProps {
 const FOCUSABLE =
   'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
+/** Handles keyboard focus trapping and scroll lock while the dialog is open. */
+function useFocusTrap(
+  open: boolean,
+  panelRef: React.RefObject<HTMLDivElement | null>,
+  onClose: () => void,
+): void {
+  useEffect(() => {
+    if (!open) return;
+
+    const panel = panelRef.current;
+    const prevFocus = document.activeElement as HTMLElement;
+    const prevOverflow = document.body.style.overflow;
+
+    const focusables = panel?.querySelectorAll<HTMLElement>(FOCUSABLE);
+    (focusables?.[0] ?? panel)?.focus();
+    document.body.style.overflow = "hidden";
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") { event.preventDefault(); onClose(); return; }
+      if (event.key !== "Tab") return;
+      const items = panel?.querySelectorAll<HTMLElement>(FOCUSABLE);
+      if (!items || items.length === 0) { event.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (event.shiftKey && active === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && active === last) { event.preventDefault(); first.focus(); }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+      prevFocus?.focus();
+    };
+  }, [open, panelRef, onClose]);
+}
+
 /**
  * Accessible modal dialog.
  *
@@ -37,53 +75,9 @@ export function Dialog({
   className,
 }: DialogProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const previouslyFocused = useRef<HTMLElement | null>(null);
   const onCloseStable = useCallbackRef(onClose);
 
-  useEffect(() => {
-    if (!open) return;
-
-    previouslyFocused.current = document.activeElement as HTMLElement;
-    const panel = panelRef.current;
-    // Move focus into the dialog.
-    const focusables = panel?.querySelectorAll<HTMLElement>(FOCUSABLE);
-    (focusables?.[0] ?? panel)?.focus();
-
-    // Lock body scroll while the dialog is open.
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onCloseStable();
-        return;
-      }
-      if (event.key !== "Tab") return;
-      const items = panel?.querySelectorAll<HTMLElement>(FOCUSABLE);
-      if (!items || items.length === 0) {
-        event.preventDefault();
-        return;
-      }
-      const first = items[0];
-      const last = items[items.length - 1];
-      const active = document.activeElement;
-      if (event.shiftKey && active === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && active === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = prevOverflow;
-      previouslyFocused.current?.focus();
-    };
-  }, [open, onCloseStable]);
+  useFocusTrap(open, panelRef, onCloseStable);
 
   const mounted = useSyncExternalStore(
     () => () => {},
@@ -92,11 +86,10 @@ export function Dialog({
   );
 
   if (!open || !mounted) return null;
+  if (typeof document === "undefined" || !document.body) return null;
 
   const titleId = "dialog-title";
   const descId = description ? "dialog-desc" : undefined;
-
-  if (typeof document === "undefined" || !document.body) return null;
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

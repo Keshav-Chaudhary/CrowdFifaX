@@ -25,6 +25,53 @@ interface SelectProps {
   className?: string;
 }
 
+interface SelectMenuRefs {
+  buttonRef: React.RefObject<HTMLButtonElement>;
+  listRef: React.RefObject<HTMLUListElement>;
+}
+
+/** Closes the dropdown when a pointer event occurs outside the button or list. */
+function useOutsidePointerClose(
+  open: boolean,
+  refs: SelectMenuRefs,
+  onClose: () => void,
+): void {
+  useEffect(() => {
+    if (!open) return;
+    function onDocPointer(event: PointerEvent) {
+      const target = event.target as Node;
+      const outside =
+        !refs.buttonRef.current?.contains(target) &&
+        !refs.listRef.current?.contains(target);
+      if (outside) onClose();
+    }
+    document.addEventListener("pointerdown", onDocPointer);
+    return () => document.removeEventListener("pointerdown", onDocPointer);
+  }, [open, refs, onClose]);
+}
+
+/** Scrolls the active option into view when the list is open. */
+function useScrollActiveOption(
+  open: boolean,
+  activeIndex: number,
+  optionId: (i: number) => string,
+): void {
+  useEffect(() => {
+    if (!open) return;
+    document.getElementById(optionId(activeIndex))?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, open, optionId]);
+}
+
+/** Moves focus into the listbox when it opens. */
+function useListFocusOnOpen(
+  open: boolean,
+  listRef: React.RefObject<HTMLUListElement>,
+): void {
+  useEffect(() => {
+    if (open) listRef.current?.focus();
+  }, [open, listRef]);
+}
+
 export function Select({
   options,
   value,
@@ -45,6 +92,7 @@ export function Select({
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const refs: SelectMenuRefs = { buttonRef, listRef };
 
   const selectedIndex = options.findIndex((o) => o.value === value);
   const selected = selectedIndex >= 0 ? options[selectedIndex] : null;
@@ -69,36 +117,16 @@ export function Select({
   );
 
   const toggleMenu = useCallback(() => {
-    if (open) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
+    if (open) closeMenu();
+    else openMenu();
   }, [open, closeMenu, openMenu]);
 
-  useEffect(() => {
-    if (!open) return;
-    function onDocPointer(event: PointerEvent) {
-      const target = event.target as Node;
-      if (!buttonRef.current?.contains(target) && !listRef.current?.contains(target)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("pointerdown", onDocPointer);
-    return () => document.removeEventListener("pointerdown", onDocPointer);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open || !listRef.current) return;
-    document.getElementById(optionId(activeIndex))?.scrollIntoView({ block: "nearest" });
-  }, [activeIndex, open, optionId]);
-
-  useEffect(() => {
-    if (open) listRef.current?.focus();
-  }, [open]);
+  useOutsidePointerClose(open, refs, () => setOpen(false));
+  useScrollActiveOption(open, activeIndex, optionId);
+  useListFocusOnOpen(open, listRef);
 
   const handleTypeahead = useTypeahead(options, open, setActiveIndex, selectIndex);
-  
+
   const { onButtonKeyDown, onListKeyDown } = useKeyboardNavigation({
     optionsLength: options.length,
     openMenu,

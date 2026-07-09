@@ -108,9 +108,21 @@ async def post_chat(request: Request, payload: ChatRequest) -> StreamingResponse
             
     # 2. Build system contextual prompt
     system_prompt = context_engine.build_system_context(payload.context)
-    user_query = payload.messages[-1].content if payload.messages else ""
+    raw_user_query = payload.messages[-1].content if payload.messages else ""
+    user_query = f"<user_question>\n{raw_user_query}\n</user_question>" if raw_user_query else ""
     
-    # 3. Check Caching Layer
+    if payload.messages:
+        payload.messages[-1].content = user_query
+    
+    # 3. Short-circuit: skip LLM entirely if there is no free-text question
+    if not raw_user_query.strip():
+        from backend.services.mock_llm import mock_llm_service
+        async def stream_short_circuit():
+            async for chunk in mock_llm_service.stream_chat(system_prompt, [m.model_dump() for m in payload.messages]):
+                yield chunk
+        return StreamingResponse(stream_short_circuit(), media_type="text/plain")
+    
+    # 4. Check Caching Layer
     cached_response = prompt_cache.get(system_prompt, user_query)
     if cached_response:
         metrics_exporter.record_cache_hit()
@@ -119,7 +131,7 @@ async def post_chat(request: Request, payload: ChatRequest) -> StreamingResponse
             yield cached_response
         return StreamingResponse(stream_cached(), media_type="text/plain")
 
-    # 4. Stream LLM query completions
+    # 5. Stream LLM query completions
     async def event_generator():
         collected_chunks = []
         async for chunk in llm_service.stream_chat(system_prompt, [m.model_dump() for m in payload.messages]):

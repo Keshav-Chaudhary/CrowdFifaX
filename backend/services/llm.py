@@ -28,14 +28,17 @@ class LLMService:
             "model": settings.gemini_model,
             "messages": formatted_messages,
             "stream": True,
-            "temperature": 0.2
+            "temperature": 0.2,
+            "max_tokens": 256
         }
         
         url = f"{settings.gemini_base_url.rstrip('/')}/chat/completions"
         
-        # In case settings.gemini_api_key is empty and base url is gemini, raise configuration exception
+        # In case settings.gemini_api_key is empty and base url is gemini, use offline MockLLM
         if not settings.gemini_api_key and "generativelanguage" in settings.gemini_base_url:
-            yield "LLM Error: GEMINI_API_KEY environment variable is not configured. Running in offline/fallback mode."
+            from backend.services.mock_llm import mock_llm_service
+            async for chunk in mock_llm_service.stream_chat(system_prompt, messages):
+                yield chunk
             return
 
         try:

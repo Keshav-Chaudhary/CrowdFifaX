@@ -1,10 +1,13 @@
 from typing import List, Optional
+import functools
 
 class PhrasingService:
+    
+    @functools.lru_cache(maxsize=128)
     def compile_guidelines(
         self,
         language: str,
-        accessibility_needs: List[str],
+        accessibility_needs: tuple,
         minutes_to_kickoff: Optional[int],
         is_crowded: bool
     ) -> str:

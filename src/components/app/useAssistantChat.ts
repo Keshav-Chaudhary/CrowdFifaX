@@ -19,6 +19,36 @@ export interface UseAssistantChat {
   reset: () => void;
 }
 
+/** Probes /api/assistant (GET) to determine if the AI endpoint is available. */
+function useAICapabilityProbe(setEnabled: (v: boolean) => void): void {
+  useEffect(() => {
+    let active = true;
+    fetch("/api/assistant")
+      .then((r) => r.json())
+      .then((d) => { if (active) setEnabled(Boolean(d.enabled)); })
+      .catch(() => { if (active) setEnabled(false); });
+    return () => { active = false; };
+  }, [setEnabled]);
+}
+
+/** Reads a streaming response body, calling onChunk for each decoded piece. */
+async function readSSEStream(
+  body: ReadableStream<Uint8Array>,
+  onChunk: (chunk: string) => void,
+): Promise<void> {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      onChunk(decoder.decode(value, { stream: true }));
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+
 export function useAssistantChat(
   getActivities: () => Activity[],
   persona: string = "organizer"
@@ -27,36 +57,23 @@ export function useAssistantChat(
   const [status, setStatus] = useState<ChatStatus>("idle");
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
+
   const activitiesRef = useRef(getActivities);
-  
-  useEffect(() => {
-    activitiesRef.current = getActivities;
-  }, [getActivities]);
+  useEffect(() => { activitiesRef.current = getActivities; }, [getActivities]);
+
+  const messagesRef = useRef(messages);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
 
   const addActivity = useCarbonStore((s) => s.addActivity);
   const { toast } = useToast();
 
-  useEffect(() => {
-    let active = true;
-    fetch("/api/assistant")
-      .then((r) => r.json())
-      .then((d) => active && setEnabled(Boolean(d.enabled)))
-      .catch(() => active && setEnabled(false));
-    return () => {
-      active = false;
-    };
-  }, []);
+  useAICapabilityProbe(setEnabled);
 
   const reset = useCallback(() => {
     setMessages([]);
     setError(null);
     setStatus("idle");
   }, []);
-
-  const messagesRef = useRef(messages);
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
 
   const send = useCallback(async (text: string) => {
     const trimmed = text.trim();
@@ -67,9 +84,7 @@ export function useAssistantChat(
 
     const userMsg: ChatMessage = { role: "user", content: trimmed };
     const assistantMsg: ChatMessage = { role: "assistant", content: "" };
-
-    const nextWithAssistant = [...messagesRef.current, userMsg, assistantMsg];
-    setMessages(nextWithAssistant);
+    setMessages([...messagesRef.current, userMsg, assistantMsg]);
 
     try {
       const res = await fetch("/api/assistant", {
@@ -87,14 +102,9 @@ export function useAssistantChat(
         throw new Error(data.error ?? "The assistant is unavailable.");
       }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
+      await readSSEStream(res.body, (chunk) => {
         setMessages((m) => appendChunkToLastMessage(m, chunk));
-      }
+      });
 
       setMessages((m) => {
         const copy = [...m];
@@ -110,9 +120,7 @@ export function useAssistantChat(
       setMessages((m) => {
         const copy = [...m];
         const last = copy[copy.length - 1];
-        if (last && last.role === "assistant" && last.content === "") {
-          return copy.slice(0, -1);
-        }
+        if (last && last.role === "assistant" && last.content === "") return copy.slice(0, -1);
         return m;
       });
       setError(err instanceof Error ? err.message : "Something went wrong.");
