@@ -16,7 +16,6 @@
     "deploy": "npm run build && firebase deploy --only hosting"
   },
   "dependencies": {
-    "@rolldown/binding-win32-x64-msvc": "^1.0.3",
     "clsx": "^2.1.1",
     "firebase": "^12.14.0",
     "lucide-react": "^1.17.0",
