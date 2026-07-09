@@ -59,7 +59,7 @@ const RULES: Rule[] = [
     return {
       id: "ops-subway-surge",
       level: "opportunity",
-      category: "transit",
+      category: "transport",
       title: "Divert Metro Arrivals to Buses",
       detail: `You logged ${subway} metro surge periods. Swapping to bus arrivals would cut about ${saving} units of pedestrian load.`,
       potentialSavingKg: saving,
@@ -77,7 +77,7 @@ const RULES: Rule[] = [
     return {
       id: "ops-gate-redirect",
       level: "opportunity",
-      category: "transit",
+      category: "transport",
       title: "Redirect Standard Ingress to Wide Gates",
       detail: `You directed ${round(standardGates)} units of standard flow. Redirecting to wide gates saves roughly ${saving} units of congestion.`,
       potentialSavingKg: saving,
@@ -109,9 +109,9 @@ const RULES: Rule[] = [
     return {
       id: "ops-ingress-win",
       level: "win",
-      category: "transit",
-      title: "Optimal Ingress Flow",
-      detail: `You managed ${round(optimalFlow)} units of flow via buses or wide gates. That is an optimal choice — keep it up.`,
+      category: "transport",
+      title: "Optimal Flow Managed",
+      detail: `You successfully logged ${round(optimalFlow)} units of high-efficiency routing. That is an optimal choice — keep it up.`,
       confidence: "High",
       reasoning: "Using multiple entry points prevents localized bottlenecking.",
     };
