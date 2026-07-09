@@ -10,7 +10,7 @@ The application is styled from the ground up using a modern, dark-first Bento Bo
   <br><br>
   
   <h3>🔥 Try CrowdFifaX Live!</h3>
-  <a href="https://crowdfifax-151042690493.us-central1.run.app/" target="_blank">
+  <a href="https://crowd-fifax.web.app/" target="_blank">
     <img src="https://img.shields.io/badge/Launch%20Interactive%20Demo-10b981?style=for-the-badge&logo=youtube&logoColor=white" alt="Interactive Demo" />
   </a>
   <p><em>Click the button above to explore the interactive walkthrough.</em></p>
