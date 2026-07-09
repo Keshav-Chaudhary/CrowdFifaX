@@ -5,7 +5,7 @@ import { ExplainAIButton } from "@/components/ui/ExplainAIButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Navigation, Coffee, MapPin, Leaf, Ticket, MessageSquare, Send, CheckCircle2, ShieldAlert, Sparkles, Globe, Eye } from "lucide-react";
 import { useAlerts } from "@/contexts/AlertsContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 import { useAccessibility } from "@/contexts/AccessibilityContext";
 import { useTranslation } from "@/contexts/LanguageContext";
@@ -67,7 +67,7 @@ export function FanDashboard() {
               <Eye className="size-4" />
             </button>
             <button 
-              onClick={() => setLanguage(language === "EN" ? "PT" : language === "PT" ? "ES" : "EN")}
+              onClick={() => setLanguage(language === "EN" ? "FR" : language === "FR" ? "ES" : "EN")}
               className="px-3 h-10 rounded-full flex items-center gap-2 bg-surface-2/80 backdrop-blur-md border border-[var(--border-faint)] text-fg hover:bg-surface-3 transition-colors font-bold text-xs"
               title="Toggle Language"
             >

@@ -11,14 +11,14 @@ export function TransitPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl font-black tracking-tight text-fg">Transportation</h1>
-          <p className="text-fg-muted">Live transit schedules and smart routing to Estádio da Luz.</p>
+          <p className="text-fg-muted">Live transit schedules and smart routing to MetLife Stadium.</p>
         </div>
         <ExplainAIButton explanation={{
           title: "AI Transit Optimization",
-          dataInputs: ["Lisbon Metro API", "Live Traffic Feeds", "Stadium Exit Density"],
-          prediction: "Leaving via the Blue Line (Linha Azul) will result in a 22-minute wait due to 8,000 fans exiting simultaneously.",
+          dataInputs: ["NJ Transit API", "Live Traffic Feeds", "Stadium Exit Density"],
+          prediction: "Leaving via the Meadowlands Rail Line will result in a 22-minute wait due to 8,000 fans exiting simultaneously.",
           confidence: 89,
-          reasoning: "We recommend taking a 10-minute walk to the Green Line or booking a ride-share from Zone C to avoid the primary bottleneck at Colégio Militar/Luz station."
+          reasoning: "We recommend taking the shuttle bus to Secaucus Junction or booking a ride-share from Lot E to avoid the primary bottleneck at the Meadowlands station."
         }} />
       </div>
 
@@ -32,15 +32,15 @@ export function TransitPage() {
             </h2>
             
             <div className="flex flex-col gap-3">
-              {/* Blue Line */}
+              {/* Meadowlands Rail Line */}
               <div className="p-4 rounded-2xl bg-surface-2 border border-[var(--border-faint)] flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-blue-500/20 text-blue-500 border border-blue-500/30 flex items-center justify-center font-black">
-                    Az
+                    NJ
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-fg">Linha Azul (Blue Line)</span>
-                    <span className="text-xs text-fg-muted">Colégio Militar/Luz</span>
+                    <span className="text-sm font-bold text-fg">Meadowlands Rail Line</span>
+                    <span className="text-xs text-fg-muted">Meadowlands Station</span>
                   </div>
                 </div>
                 <div className="text-right">
@@ -49,18 +49,18 @@ export function TransitPage() {
                 </div>
               </div>
 
-              {/* Green Line */}
+              {/* Secaucus Shuttle */}
               <div className="p-4 rounded-2xl border border-[var(--accent-line)] bg-[var(--accent-subtle)] flex items-center justify-between relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-2">
                   <span className="text-[9px] font-black uppercase tracking-widest text-white bg-[var(--accent)] px-2 py-0.5 rounded-full">AI Recommended</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-green-500/20 text-green-500 border border-green-500/30 flex items-center justify-center font-black">
-                    Vd
+                    SH
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-fg">Linha Verde (Green)</span>
-                    <span className="text-xs text-[var(--accent)] font-bold">10 min walk away</span>
+                    <span className="text-sm font-bold text-fg">Secaucus Express Shuttle</span>
+                    <span className="text-xs text-[var(--accent)] font-bold">10 min walk to Lot E</span>
                   </div>
                 </div>
                 <div className="text-right mt-3 sm:mt-0">

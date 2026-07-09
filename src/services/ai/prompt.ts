@@ -40,19 +40,22 @@ ${CORE_RULES}
 
 export function buildSimulatedTelemetry(persona?: string): string {
   const time = new Date().toLocaleTimeString();
-  const matchContext = `\n- MATCH INFO: Current Match is Portugal vs Spain at Estádio da Luz (Score 2-1, 72'). Upcoming Match is France vs Germany at Estádio José Alvalade at 20:00.`;
+  const matchContext = `\n- MATCH INFO: Current Match is USA vs Mexico at MetLife Stadium (Score 2-1, 72'). Upcoming Match is Canada vs France at BC Place at 20:00.`;
   const emergencyContext = `\n- EMERGENCY STATUS: Nominal. No active emergency protocols.`;
+  const transitContext = `\n- TRANSPORTATION: NJ Transit Meadowlands Rail departs in 15 mins. Secaucus Express Shuttle wait is 5 mins. Route fans to trains proactively to reduce congestion.`;
+  const sustainabilityContext = `\n- SUSTAINABILITY: Stadium Power is 100% Renewable Grid. Waste Diversion Rate at 78%. Emphasize recycling to fans.`;
   
   if (persona === "fan") {
-    return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}\n- Wait times: Hot Dog Stand A (3 min), Restrooms Level 2 (1 min), Merch Store (12 min).\n- Nearest exit from Sector 4: Gate 2.\n- Active Incidents: None.`;
+    return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}${transitContext}\n- Wait times: Hot Dog Stand A (3 min), Restrooms Level 2 (1 min), Merch Store (12 min).\n- Nearest exit from Sector 4: Gate 2.\n- Active Incidents: None.`;
   }
   
   if (persona === "volunteer") {
-    return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}\n- Active Incidents: Minor spill at Concourse C (Code Yellow), Lost child reported near Gate 4 (Code Blue).\n- Medical Tents: Level 1 North is fully operational.`;
+    return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}${sustainabilityContext}\n- Active Incidents: Minor spill at Concourse C (Code Yellow), Lost child reported near Gate 4 (Code Blue).\n- Medical Tents: Level 1 North is fully operational.`;
   }
 
   // organizer
-  return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}\n- Gate 6: 85% capacity, expected bottleneck in 10 minutes.\n- Concourse C: Severe crowding, recommend dispatching crowd control.\n- Weather: Clear, 22°C.\n- Overall capacity: 92% (75,432 attendees).`;
+  const operationalContext = `\n- OPERATIONAL INTELLIGENCE: Security Staffing at 92% active deployment. Volunteer dispatch response time average: 2.1 mins.`;
+  return `LIVE STADIUM CONTEXT:\n- Current Time: ${time}${matchContext}${emergencyContext}${sustainabilityContext}${transitContext}${operationalContext}\n- Gate 6: 85% capacity, expected bottleneck in 10 minutes.\n- Concourse C: Severe crowding, recommend dispatching crowd control.\n- Weather: Clear, 22°C.\n- Overall capacity: 92% (75,432 attendees).`;
 }
 
 /**

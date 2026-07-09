@@ -1,0 +1,22 @@
+{
+  "gates": {
+    "Gate 1": { "wait_time_mins": 5, "capacity_pct": 30, "status": "nominal" },
+    "Gate 2": { "wait_time_mins": 3, "capacity_pct": 20, "status": "nominal" },
+    "Gate 3": { "wait_time_mins": 25, "capacity_pct": 85, "status": "crowded" },
+    "Gate 4": { "wait_time_mins": 30, "capacity_pct": 92, "status": "bottleneck" },
+    "Gate 5": { "wait_time_mins": 8, "capacity_pct": 45, "status": "nominal" },
+    "Gate 6": { "wait_time_mins": 45, "capacity_pct": 95, "status": "bottleneck" },
+    "Gate 7": { "wait_time_mins": 4, "capacity_pct": 25, "status": "nominal" },
+    "Gate 8": { "wait_time_mins": 2, "capacity_pct": 15, "status": "nominal" }
+  },
+  "concourses": {
+    "North Concourse": { "density_score": 0.35, "status": "nominal" },
+    "East Concourse": { "density_score": 0.88, "status": "crowded" },
+    "South Concourse": { "density_score": 0.95, "status": "bottleneck" },
+    "West Concourse": { "density_score": 0.20, "status": "nominal" }
+  },
+  "concessions": {
+    "Hot Dog Stand A": { "wait_time_mins": 3, "queue_length": 4 },
+    "Official Merch Store East": { "wait_time_mins": 12, "queue_length": 18 }
+  }
+}

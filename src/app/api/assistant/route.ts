@@ -91,11 +91,11 @@ export async function POST(req: Request): Promise<Response> {
   // Sanitize each message before it touches the prompt builder: strip control
   // and invisible characters that can be used to obfuscate prompt injection.
   const sanitizedMessages = parsed.data.messages
-    .map((m) => ({
-      role: m.role,
-      content: sanitizeText(m.content, MAX_USER_MESSAGE_LENGTH),
+    .map((chatMessage) => ({
+      role: chatMessage.role,
+      content: sanitizeText(chatMessage.content, MAX_USER_MESSAGE_LENGTH),
     }))
-    .filter((m) => m.content.length > 0);
+    .filter((chatMessage) => chatMessage.content.length > 0);
 
   if (sanitizedMessages.length === 0) {
     return jsonError("Message content is empty after sanitization.", 400);
@@ -103,9 +103,9 @@ export async function POST(req: Request): Promise<Response> {
 
   // Validate prompts using PromptGuard to block prompt injection attacks.
   try {
-    for (const m of sanitizedMessages) {
-      if (m.role === "user") {
-        validatePrompt(m.content);
+    for (const chatMessage of sanitizedMessages) {
+      if (chatMessage.role === "user") {
+        validatePrompt(chatMessage.content);
       }
     }
   } catch (error) {
@@ -149,8 +149,8 @@ export async function POST(req: Request): Promise<Response> {
 
 /** Lightweight capability probe so the UI can show/hide the assistant. */
 export async function GET(): Promise<Response> {
-  const configured = isAIEnabled();
-  if (!configured) {
+  const isAiConfigured = isAIEnabled();
+  if (!isAiConfigured) {
     return new Response(JSON.stringify({ enabled: false, configured: false }), {
       headers: { "Content-Type": "application/json" },
     });

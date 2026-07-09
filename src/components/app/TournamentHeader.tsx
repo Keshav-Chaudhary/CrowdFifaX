@@ -4,11 +4,15 @@ import { Calendar, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/contexts/LanguageContext";
 
+const MOCK_LIVE_SCORE = "2 - 1";
+const MOCK_MATCH_MINUTE = "72' Min";
+const MOUNT_TIMEOUT_MS = 0;
+
 export function TournamentHeader() {
   const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
   useEffect(() => {
-    setTimeout(() => setMounted(true), 0);
+    setTimeout(() => setMounted(true), MOUNT_TIMEOUT_MS);
   }, []);
 
   if (!mounted) return null;
@@ -28,12 +32,10 @@ export function TournamentHeader() {
         
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-fg">Portugal</span>
-            <span className="text-sm font-bold text-fg-muted">vs</span>
-            <span className="text-sm font-bold text-fg">Spain</span>
+            <span className="text-sm font-bold text-fg">{t.ticket_match_name}</span>
           </div>
           <div className="px-3 py-0.5 bg-surface-3 border border-[var(--border-strong)] rounded-md text-sm font-black text-[var(--accent)] shadow-inner">
-            2 - 1
+            {MOCK_LIVE_SCORE}
           </div>
         </div>
       </div>
@@ -44,11 +46,11 @@ export function TournamentHeader() {
       <div className="flex items-center gap-4 text-xs font-medium text-fg-muted">
         <div className="flex items-center gap-1.5">
           <MapPin className="size-3.5" />
-          <span>Estádio da Luz, Lisbon</span>
+          <span>{t.ticket_match_venue}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <Calendar className="size-3.5" />
-          <span>72&apos; Min</span>
+          <span>{MOCK_MATCH_MINUTE}</span>
         </div>
       </div>
 

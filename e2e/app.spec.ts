@@ -64,6 +64,7 @@ test("wayfinding page loads and accessible routing toggle works", async ({ page 
 test("landing page has no detectable accessibility violations", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("heading", { level: 1 }).waitFor();
+  await page.waitForTimeout(1200);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
@@ -73,6 +74,7 @@ test("landing page has no detectable accessibility violations", async ({ page })
 test("the dashboard has no accessibility violations", async ({ page }) => {
   await page.goto("/app");
   await page.getByRole("heading", { level: 1 }).waitFor();
+  await page.waitForTimeout(1200);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();
@@ -82,6 +84,7 @@ test("the dashboard has no accessibility violations", async ({ page }) => {
 test("the wayfinding page has no accessibility violations", async ({ page }) => {
   await page.goto("/app/wayfinding");
   await page.getByRole("heading", { level: 1 }).waitFor();
+  await page.waitForTimeout(1200);
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa"])
     .analyze();

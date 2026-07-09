@@ -28,7 +28,7 @@ export default defineConfig({
         "src/components/ui/Badge.tsx",
         "src/components/ui/ProgressRing.tsx",
         "src/components/app/shared/Markdown.tsx",
-        "src/app/api/assistant/route_disabled.ts",
+        "src/app/api/assistant/route.ts",
       ],
       thresholds: {
         lines: 100,

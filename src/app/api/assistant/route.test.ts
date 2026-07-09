@@ -46,7 +46,7 @@ vi.mock("@/services/security/PromptGuard", async () => {
   };
 });
 
-import { POST, GET } from "@/app/api/assistant/route_disabled";
+import { POST, GET } from "@/app/api/assistant/route";
 
 function makeRequest(body: unknown, raw = false): Request {
   return new Request("http://localhost/api/assistant", {

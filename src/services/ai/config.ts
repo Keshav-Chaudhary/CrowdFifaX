@@ -10,6 +10,9 @@ export const FALLBACK_MODELS: readonly string[] = [
   "gemini-1.5-pro",
 ];
 
+export const DEFAULT_TIMEOUT_MS = 30_000;
+export const PROBE_TIMEOUT_MS = 3_000;
+
 export interface AIConfig {
   baseURL: string;
   apiKey: string;
@@ -37,7 +40,7 @@ export function getAIConfig(): AIConfig | null {
     baseURL,
     apiKey,
     models,
-    timeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) || 30_000,
+    timeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) || DEFAULT_TIMEOUT_MS,
   };
 }
 
@@ -53,7 +56,7 @@ export async function testAIConnection(): Promise<boolean> {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000); // 3 seconds timeout
+    const timeout = setTimeout(() => controller.abort(), PROBE_TIMEOUT_MS);
     
     const response = await fetch(`${config.baseURL}/chat/completions`, {
       method: "POST",

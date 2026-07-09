@@ -1,0 +1,13 @@
+{
+  "name": "MetLife Stadium",
+  "aka": "New York New Jersey Stadium",
+  "location": "East Rutherford, NJ",
+  "capacity": 82500,
+  "role": "Host of FIFA World Cup 2026™ Final",
+  "sectors": [
+    { "id": "A", "name": "North Concourse", "gates": ["Gate 1", "Gate 2"] },
+    { "id": "B", "name": "East Concourse", "gates": ["Gate 3", "Gate 4"] },
+    { "id": "C", "name": "South Concourse", "gates": ["Gate 5", "Gate 6"] },
+    { "id": "D", "name": "West Concourse", "gates": ["Gate 7", "Gate 8"] }
+  ]
+}

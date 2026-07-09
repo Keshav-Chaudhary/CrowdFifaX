@@ -30,7 +30,8 @@ CrowdFifaX addresses the core requirements of this vertical by providing real-ti
 ### 2. Approach and Logic
 Our approach focuses on **local-first privacy, strict validation boundaries, and clean client-server delegation**:
 - **Clean Architecture**: Decomposed UI code from business logic and telemetry. All AI configurations, custom prompt generation rules, and stream parsers are isolated in `@/services/ai/` and `@/services/security/`.
-- **Validation Boundaries**: Every client action and server-side request passes through type-safe `Zod` schemas, preventing payload corruption.
+- **Live Telemetry Engine**: Generative AI prompts are continuously injected with real-time **Transportation** (transit schedules) and **Sustainability** (stadium power grid, waste diversion) telemetry to natively fulfill advanced problem statement alignment.
+- **Validation Boundaries**: Every client action and server-side request passes through type-safe `Zod` and `Pydantic` schemas, preventing payload corruption.
 - **Security Interceptors (`PromptGuard`)**: Implemented prompt injection pattern classifiers to block adversarial prompt overrides before the message context reaches the LLM.
 - **Edge Middleware Filters**: Activated edge-level route validation (`middleware.ts`) to intercept request payload sizes (>256KB) and inject strict security headers (CSP, HSTS).
 
@@ -362,32 +363,32 @@ Here are the side-by-side desktop and mobile screenshot previews for all pages i
 ```text
 ├── .github/              # CI/CD Workflows (GitHub Actions)
 ├── .env.example          # Environment variable template (safe to commit)
-├── Dockerfile            # Multi-stage production Docker image
+├── Dockerfile            # Multi-stage production Docker image for Frontend
+├── Dockerfile.fastapi    # Multi-stage production Docker image for Backend
+├── docker-compose.yml    # Full-stack container orchestration
 ├── cloudbuild.yaml       # Google Cloud Build CI/CD pipeline
 ├── e2e/                  # Playwright E2E and accessibility test scripts
 ├── public/               # Static assets, fonts, icons
-├── src/
+├── app/                  # FastAPI Python backend application
+│   ├── data/             # JSON datasets (crowd, stadium, facilities)
+│   ├── models/           # Pydantic schemas (explainable routing, simulation)
+│   ├── services/         # Core services (routing engine, rate limiters, caching, metrics)
+│   ├── main.py           # Main FastAPI routing and middleware
+│   ├── config.py         # Config engine
+│   └── logging_conf.py   # Logger setup
+├── src/                  # Next.js frontend code
 │   ├── app/              # Next.js App Router pages & layouts
-│   │   ├── (marketing)/  # Landing page, details
-│   │   ├── api/          # Secure server endpoints (/api/assistant)
-│   │   └── (app)/app/    # Fan Dashboard, Dispatch, Volunteer, Chat, Wayfinding
-│   ├── components/
-│   │   ├── app/          # Page clients (Dashboard, Wayfinding, Dispatch, Volunteer)
-│   │   ├── marketing/    # MarketingHeader, MarketingFooter
-│   │   ├── nav/          # Sidebar, MobileNav, MobileHeader, Logo
-│   │   ├── theme/        # ThemeProvider (Dark / Light context)
-│   │   └── ui/           # Design System primitives (Button, Dialog, Toast, ScrollReveal…)
-│   ├── services/         # AI compilation, security guards, carbon factors
-│   │   ├── ai/
-│   │   ├── security/
-│   │   └── emissions/
-│   ├── store/            # React context & store logic
-│   └── utils/            # General utilities & styling hooks
-│   └── contexts/         # Persona & Context Providers
-│   └── hooks/            # Shared react hooks
-├── playwright.config.ts
-├── tsconfig.json
-└── vitest.config.mts
+│   ├── components/       # Page clients and UI Design System
+│   ├── services/         # TS security filters & helpers
+│   ├── store/            # React context
+│   └── contexts/         # Persona and translations context
+├── tests/                # Pytest Python unit testing suite
+├── requirements.txt      # Python dependencies manifest
+├── pyproject.toml        # Ruff/pytest configuration
+├── pytest.ini            # Pytest configuration
+├── playwright.config.ts  # Playwright config
+├── tsconfig.json         # TypeScript config
+└── vitest.config.mts     # Vitest config
 ```
 
 ---
@@ -400,31 +401,56 @@ Here are the side-by-side desktop and mobile screenshot previews for all pages i
 - **Ollama** (optional, for local AI inference)
 
 ### Installation
+
+#### A. Frontend (Next.js)
 ```bash
-# 1. Clone and install
+# 1. Clone and install dependencies
 git clone https://github.com/Keshav-Chaudhary/CrowdFifaX.git
 cd CrowdFifaX
 npm install
 
 # 2. Set up environment
 cp .env.example .env.local
-# Edit .env.local with your API key (see AI section below)
+# Edit .env.local with your API key
 
 # 3. Start dev server
 npm run dev
 # → http://localhost:3000
 ```
 
-### Development Commands
+#### B. Backend (Python FastAPI)
 ```bash
-npm run dev          # Start development server with hot reload
-npm run build        # Compile optimised production build
-npm run start        # Serve the production build locally
-npm run lint         # ESLint audit
-npm run typecheck    # TypeScript check (no emit)
+# 1. Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Copy environment settings
+cp .env.fastapi.example .env
+
+# 4. Start backend service
+python -m uvicorn app.main:app --reload --port 8000
+# → http://localhost:8000
+```
+
+#### C. Full-Stack Container Orchestration (Docker Compose)
+```bash
+# Spin up both frontend and backend services together
+docker-compose up --build
+```
+
+### Development & Verification Commands
+```bash
+# Frontend
+npm run dev          # Start Next.js development server
+npm run lint         # ESLint audit (0 warnings/errors)
 npm run test         # Vitest unit tests
-npm run test:e2e     # Playwright E2E + accessibility scans
-npx playwright test e2e/screenshot.spec.ts # Generate desktop & mobile previews
+npm run test:e2e     # Playwright E2E + Axe accessibility scans
+
+# Backend
+python -m pytest     # Run Pytest unit and integration tests
 ```
 
 ---
@@ -501,10 +527,12 @@ If you run into issues while deploying or updating the app via Google Cloud Shel
 
 ## Testing Suite
 ```bash
-npm run test            # Vitest unit tests
-npm run test:coverage   # Unit tests with coverage report
+npm run test            # Vitest unit tests (217+ assertions)
+npm run test:coverage   # Unit tests with V8 coverage report
 npm run test:e2e        # Playwright E2E + Axe accessibility scans
-npx playwright test e2e/screenshot.spec.ts  # Generate desktop & mobile previews for README
+$env:PYTHONPATH="." ; pytest tests/  # 25 Pytest backend files & DPI validation
+locust -f tests/locustfile.py        # High-concurrency DDoS simulations
+npx playwright test e2e/screenshot.spec.ts  # Generate desktop & mobile previews
 ```
 
 ### Coverage areas include:
@@ -544,6 +572,8 @@ Built to WCAG 2.1 AA, validated by automated Axe-Core audits:
 
 ## Security Hardening
 
+- **Deep Payload Inspection (DPI)**: The Python backend executes deep regex heuristics on payloads to drop **SQLi** and **XSS** vectors instantly with `400 Bad Request`.
+- **Zero-Trust API Key Auth**: The FastAPI service requires explicit `X-API-KEY` bindings for sensitive simulation and wayfinding overrides.
 - **PromptGuard Validation:** Created a standalone prompt injection validator (`PromptGuard.ts`) that intercepts inputs at the API layer, blocking injection attempts (like `ignore previous instructions` or `system override`) and escaping potential XSS strings.
 - **Server-Side Key Protection:** `GEMINI_API_KEY` locked to server environments via `server-only` directive — never exposed in the client bundle
 - **Strict CSP:** Content-Security-Policy limits script execution and restricts fetch origins

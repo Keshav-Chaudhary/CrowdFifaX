@@ -1,0 +1,52 @@
+[
+  {
+    "id": "wc_l1_north",
+    "type": "restroom",
+    "name": "Restroom Level 1 North",
+    "zone": "North Concourse",
+    "accessible": true,
+    "has_baby_change": true,
+    "coordinates": { "x": 12, "y": 45 }
+  },
+  {
+    "id": "wc_l2_east",
+    "type": "restroom",
+    "name": "Restroom Level 2 East",
+    "zone": "East Concourse",
+    "accessible": false,
+    "has_baby_change": false,
+    "coordinates": { "x": 88, "y": 24 }
+  },
+  {
+    "id": "sensory_l1",
+    "type": "sensory_room",
+    "name": "Sensory Quiet Room Level 1",
+    "zone": "West Concourse",
+    "accessible": true,
+    "coordinates": { "x": 5, "y": 72 }
+  },
+  {
+    "id": "merch_l1_east",
+    "type": "merch_store",
+    "name": "Official Merch Store East",
+    "zone": "East Concourse",
+    "accessible": true,
+    "coordinates": { "x": 75, "y": 30 }
+  },
+  {
+    "id": "med_tent_north",
+    "type": "medical",
+    "name": "First Aid Station North",
+    "zone": "North Concourse",
+    "accessible": true,
+    "coordinates": { "x": 20, "y": 10 }
+  },
+  {
+    "id": "concession_hotdog_a",
+    "type": "concession",
+    "name": "Hot Dog Stand A",
+    "zone": "South Concourse",
+    "accessible": true,
+    "coordinates": { "x": 45, "y": 90 }
+  }
+]

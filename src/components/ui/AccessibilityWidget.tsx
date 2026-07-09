@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAccessibility } from "@/contexts/AccessibilityContext";
-import { useTranslation, Language } from "@/contexts/LanguageContext";
-import { Eye, Type, Accessibility, X, HelpCircle, Check, Globe } from "lucide-react";
+import { useTranslation } from "@/contexts/LanguageContext";
+import { Type, Accessibility, X, Globe } from "lucide-react";
 
 export function AccessibilityWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,7 +17,7 @@ export function AccessibilityWidget() {
     setDyslexicFont,
     setHighVisibilityFocus,
   } = useAccessibility();
-  const { language, setLanguage, t } = useTranslation();
+  const { language, setLanguage } = useTranslation();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -74,11 +74,16 @@ export function AccessibilityWidget() {
       }
     }
 
-    menuRef.current.addEventListener("keydown", handleTab);
+    const el = menuRef.current;
+    if (el) {
+      el.addEventListener("keydown", handleTab);
+    }
     firstElement.focus();
 
     return () => {
-      menuRef.current?.removeEventListener("keydown", handleTab);
+      if (el) {
+        el.removeEventListener("keydown", handleTab);
+      }
     };
   }, [isOpen]);
 
@@ -117,7 +122,7 @@ export function AccessibilityWidget() {
                 <Globe className="size-3 text-fg-muted" /> Language / Idioma
               </span>
               <div className="grid grid-cols-3 gap-2" role="group" aria-label="Language Selector">
-                {(["EN", "PT", "ES"] as const).map((lang) => (
+                {(["EN", "FR", "ES"] as const).map((lang) => (
                   <button
                     key={lang}
                     onClick={() => setLanguage(lang)}
@@ -129,7 +134,7 @@ export function AccessibilityWidget() {
                     }`}
                   >
                     {lang === "EN" && "English"}
-                    {lang === "PT" && "Português"}
+                    {lang === "FR" && "Français"}
                     {lang === "ES" && "Español"}
                   </button>
                 ))}

@@ -1,10 +1,9 @@
 "use client";
 
-import { Trash2, Palette, Globe, Accessibility, ShieldAlert, Info } from "lucide-react";
+import { Trash2, Globe, Accessibility, ShieldAlert, Info } from "lucide-react";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { useAccessibility } from "@/contexts/AccessibilityContext";
 import { useTranslation } from "@/contexts/LanguageContext";
-import { usePersona } from "@/contexts/PersonaContext";
 import { useState } from "react";
 import { PageHeader } from "@/components/app/shared/PageHeader";
 import { cn } from "@/utils/cn";
@@ -76,7 +75,7 @@ export function SettingsClient() {
     highVisibilityFocus,
     setHighVisibilityFocus,
   } = useAccessibility();
-  const { persona, setPersona } = usePersona();
+
 
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [enableSound, setEnableSound] = useState(true);
@@ -128,7 +127,7 @@ export function SettingsClient() {
           hint="Select the translation for dashboards, routing directions, and system prompts."
         >
           <div className="flex items-center gap-2">
-            {(["EN", "PT", "ES"] as const).map((lang) => (
+            {(["EN", "FR", "ES"] as const).map((lang) => (
               <button
                 key={lang}
                 type="button"
@@ -141,7 +140,7 @@ export function SettingsClient() {
                 )}
               >
                 {lang === "EN" && "English"}
-                {lang === "PT" && "Português"}
+                {lang === "FR" && "Français"}
                 {lang === "ES" && "Español"}
               </button>
             ))}

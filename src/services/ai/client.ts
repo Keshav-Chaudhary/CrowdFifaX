@@ -10,10 +10,15 @@ export class AINotConfiguredError extends Error {
   }
 }
 
+
+/** Represents a single message in the OpenAI-style chat completion format. */
 interface CompletionMessage {
   role: string;
   content: string;
 }
+
+export const DEFAULT_TEMPERATURE = 0.6;
+export const DEFAULT_MAX_TOKENS = 800;
 
 /**
  * Stream a chat completion from the DigitalOcean (OpenAI-compatible) endpoint,
@@ -43,8 +48,8 @@ export async function* streamChat(
           model,
           messages,
           stream: true,
-          temperature: 0.6,
-          max_tokens: 800,
+          temperature: DEFAULT_TEMPERATURE,
+          max_tokens: DEFAULT_MAX_TOKENS,
         }),
         signal: controller.signal,
       });

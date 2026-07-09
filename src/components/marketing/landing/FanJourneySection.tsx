@@ -38,7 +38,7 @@ export function FanJourneySection() {
                 <h3 className="text-2xl font-bold text-fg">AI Transit Routing</h3>
               </div>
               <p className="text-lg text-fg-muted leading-relaxed">
-                Connect directly to Lisbon Metro and ride-share APIs. Our predictive AI forecasts surges and recommends the fastest routes to Estádio da Luz before fans even reach the precinct.
+                Connect directly to NJ Transit and ride-share APIs. Our predictive AI forecasts surges and recommends the fastest routes to MetLife Stadium before fans even reach the precinct.
               </p>
             </div>
           </ScrollReveal>
