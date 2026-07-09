@@ -31,10 +31,12 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
       const savedDyslexic = localStorage.getItem("a11y_dyslexic") === "true";
       const savedFocus = localStorage.getItem("a11y_high_focus") === "true";
 
-      setHighContrastState(savedContrast);
-      setTextSizeState(savedTextSize);
-      setDyslexicFontState(savedDyslexic);
-      setHighVisibilityFocusState(savedFocus);
+      setTimeout(() => {
+        setHighContrastState(savedContrast);
+        setTextSizeState(savedTextSize);
+        setDyslexicFontState(savedDyslexic);
+        setHighVisibilityFocusState(savedFocus);
+      }, 0);
     }
   }, []);
 

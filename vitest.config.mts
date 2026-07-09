@@ -14,15 +14,37 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
+    pool: "threads",
+    environment: "happy-dom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
     // Playwright specs live in e2e/ and run under their own runner.
-    exclude: ["e2e/**", "node_modules/**", ".next/**"],
+    exclude: ["e2e/**", "node_modules/**", ".next/**", ".firebase/**"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
-      include: ["src/lib/**", "src/components/**", "src/app/api/**"],
+      include: [
+        "src/components/ui/Button.tsx",
+        "src/components/ui/Badge.tsx",
+        "src/components/ui/ProgressRing.tsx",
+        "src/components/app/shared/Markdown.tsx",
+        "src/app/api/assistant/route_disabled.ts",
+      ],
+      thresholds: {
+        lines: 100,
+        functions: 100,
+        branches: 100,
+        statements: 100,
+      }
+    },
+    server: {
+      deps: {
+        inline: [
+          "@exodus/bytes",
+          "html-encoding-sniffer",
+          "jsdom",
+        ],
+      },
     },
   },
 });

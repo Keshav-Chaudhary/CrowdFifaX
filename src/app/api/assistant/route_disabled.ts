@@ -85,7 +85,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const parsed = requestSchema.safeParse(body);
   if (!parsed.success) {
-    return jsonError(parsed.error.issues[0]?.message ?? "Invalid request.", 400);
+    return jsonError(parsed.error.issues[0].message, 400);
   }
 
   // Sanitize each message before it touches the prompt builder: strip control

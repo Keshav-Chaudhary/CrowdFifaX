@@ -16,7 +16,7 @@ function isActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function getTranslatedLabel(href: string, defaultLabel: string, t: any): string {
+export function getTranslatedLabel(href: string, defaultLabel: string, t: Record<string, string>): string {
   if (href === "/app") return t.nav_dashboard;
   if (href === "/app/ticket") return t.nav_ticket;
   if (href === "/app/wayfinding") return t.nav_wayfinding;

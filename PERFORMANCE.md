@@ -9,7 +9,7 @@ An application that relies on heavy JavaScript bundles, massive network payloads
 
 ## 1. Edge-Ready Next.js Architecture
 
-CrowdFifaX is built on the Next.js 15 App Router.
+CrowdFifaX is built on the Next.js 16 App Router.
 - **Server Components (RSC)**: Whenever possible, components are rendered on the server, shipping only pure HTML to the client browser. This drastically reduces the JavaScript parsing and execution time on low-end mobile devices.
 - **Containerized Deployment**: The application is fully Dockerized using a highly optimized multi-stage build process. The final production image is incredibly small, allowing for lightning-fast cold starts when deployed on auto-scaling serverless platforms like Google Cloud Run.
 - **Scale to Zero**: Because the API routes are stateless, the infrastructure can scale down to zero during non-match days, resulting in immense cost savings for the tournament organizers.

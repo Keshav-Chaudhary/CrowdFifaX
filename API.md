@@ -53,4 +53,4 @@ Generates a structured analysis of current stadium telemetry state using the AI 
 - `429 Too Many Requests`: Rate limit exceeded.
 
 ## Validation
-Validation logic is isolated into `src/lib/ai/client.ts` and `src/app/api/...` ensuring exact types match expected schemas.
+Validation logic is isolated into `src/services/ai/client.ts` and `src/app/api/...` ensuring exact types match expected schemas.

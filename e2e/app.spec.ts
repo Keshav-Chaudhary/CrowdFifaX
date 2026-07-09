@@ -29,6 +29,7 @@ test("landing page links through to the launch and app screen", async ({ page })
   
   // Select Fan role to proceed
   await page.getByRole("button", { name: /Fan/ }).click();
+  await expect(page.getByRole("button", { name: /Initialize Session/i })).toBeEnabled();
   await page.getByRole("button", { name: /Initialize Session/i }).click();
   await expect(page).toHaveURL(/\/app/);
   await expect(

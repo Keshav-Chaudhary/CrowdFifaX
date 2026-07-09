@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 
 // Ensure the screenshots directory exists
-const screenshotsDir = path.join(__dirname, "../public/screenshots");
+const screenshotsDir = path.join(import.meta.dirname, "../public/screenshots");
 if (!fs.existsSync(screenshotsDir)) {
   fs.mkdirSync(screenshotsDir, { recursive: true });
 }

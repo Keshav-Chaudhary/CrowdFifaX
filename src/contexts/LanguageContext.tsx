@@ -358,7 +358,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedLang = (localStorage.getItem("crowdfifax_language") as Language) || "EN";
-      setLanguageState(savedLang);
+      setTimeout(() => {
+        setLanguageState(savedLang);
+      }, 0);
     }
   }, []);
 

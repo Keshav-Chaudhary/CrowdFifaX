@@ -1,3 +1,6 @@
+/**
+ * @vitest-environment node
+ */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { resetRateLimits } from "@/services/ai/rate-limit";
 
@@ -30,6 +33,19 @@ vi.mock("@/services/ai/config", () => ({
   testAIConnection: async () => enabledState.value,
 }));
 
+vi.mock("@/services/security/PromptGuard", async () => {
+  const actual = await vi.importActual<typeof import("@/services/security/PromptGuard")>("@/services/security/PromptGuard");
+  return {
+    ...actual,
+    validatePrompt: (prompt: string) => {
+      if (prompt === "throw_generic_error") {
+        throw new Error("Generic error");
+      }
+      actual.validatePrompt(prompt);
+    }
+  };
+});
+
 import { POST, GET } from "@/app/api/assistant/route_disabled";
 
 function makeRequest(body: unknown, raw = false): Request {
@@ -56,7 +72,10 @@ function makeRequestWithHeaders(
 }
 
 const validBody = {
-  messages: [{ role: "user", content: "How am I doing?" }],
+  messages: [
+    { role: "user", content: "How am I doing?" },
+    { role: "assistant", content: "You are doing great." },
+  ],
   activities: [
     { id: "1", factorId: "transit_subway", quantity: 10, date: "2026-01-01" },
   ],
@@ -75,6 +94,12 @@ describe("GET /api/assistant", () => {
   it("reports the AI capability", async () => {
     const res = await GET();
     expect(await res.json()).toEqual({ enabled: true, configured: true });
+  });
+
+  it("reports the AI capability as disabled when not enabled", async () => {
+    enabledState.value = false;
+    const res = await GET();
+    expect(await res.json()).toEqual({ enabled: false, configured: false });
   });
 });
 
@@ -141,6 +166,28 @@ describe("POST /api/assistant", () => {
       makeRequestWithHeaders(validBody, { origin: "not a url" }),
     );
     expect(res.status).toBe(403);
+  });
+
+  it("rejects prompts that fail safety check with 400", async () => {
+    const res = await POST(
+      makeRequest({
+        messages: [{ role: "user", content: "jailbreak" }],
+        activities: [],
+      }),
+    );
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "Prompt injection attempt detected and blocked." });
+  });
+
+  it("throws other validation errors directly", async () => {
+    await expect(
+      POST(
+        makeRequest({
+          messages: [{ role: "user", content: "throw_generic_error" }],
+          activities: [],
+        }),
+      )
+    ).rejects.toThrow("Generic error");
   });
 
   it("rejects messages that are empty after sanitization", async () => {

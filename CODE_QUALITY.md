@@ -33,7 +33,7 @@ CrowdFifaX utilizes Tailwind CSS v4.
 
 ### 5. AI Logic Abstraction
 A common anti-pattern in GenAI apps is mixing LLM prompt engineering directly inside UI components. CrowdFifaX strictly avoids this.
-- All LLM interaction logic, prompt building, and telemetry aggregation is neatly abstracted into `src/lib/ai/`.
+- All LLM interaction logic, prompt building, and telemetry aggregation is neatly abstracted into `src/services/ai/`.
 - The `prompt.ts` file acts as the single source of truth for all persona definitions (Fan, Organizer, Volunteer), making it incredibly easy to tweak the AI's behavior without ever touching a `.tsx` file.
 
 ---
@@ -43,7 +43,9 @@ A common anti-pattern in GenAI apps is mixing LLM prompt engineering directly in
 ### File Structure
 - `src/app`: Contains only routing logic, layouts, and page entry points.
 - `src/components`: Contains all visual logic.
-- `src/lib`: Contains all pure business logic and utility functions.
+- `src/services`: Contains prompt compilation, security guards, and carbon engines.
+- `src/store`: Contains React context state & store logic.
+- `src/utils`: Contains styling helpers and general text formatting utilities.
 
 ### Hooks and Reactivity
 - Custom hooks are used to encapsulate complex browser APIs (e.g., intersection observers, local storage).

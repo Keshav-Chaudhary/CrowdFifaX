@@ -2,6 +2,7 @@
   "name": "crowdfifax",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -41,6 +42,7 @@
     "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
+    "happy-dom": "^20.10.6",
     "jsdom": "^29.1.1",
     "playwright": "^1.60.0",
     "tailwindcss": "^4",

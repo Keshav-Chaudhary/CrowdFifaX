@@ -3,24 +3,22 @@ import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
 const eslintConfig = defineConfig([
+  {
+    ignores: [
+      ".next/**",
+      ".firebase/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      "coverage/**",
+      "playwright-report/**",
+      "test-results/**",
+      "scratch/**",
+      "public/**",
+    ]
+  },
   ...nextVitals,
   ...nextTs,
-  // Override default ignores of eslint-config-next.
-  globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
-    // Generated / vendored artifacts that should not be linted.
-    "coverage/**",
-    "playwright-report/**",
-    "test-results/**",
-    // Scratch scripts used for local diagnostics only.
-    "scratch/**",
-    // Public generated assets (like service workers)
-    "public/**",
-  ]),
 ]);
 
 export default eslintConfig;

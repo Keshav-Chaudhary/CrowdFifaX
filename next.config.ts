@@ -13,7 +13,6 @@ import { securityHeaders } from "./src/services/security/headers";
  */
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  output: "export",
   poweredByHeader: false,
 //   async headers() {
 //     return [

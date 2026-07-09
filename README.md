@@ -29,7 +29,7 @@ CrowdFifaX addresses the core requirements of this vertical by providing real-ti
 
 ### 2. Approach and Logic
 Our approach focuses on **local-first privacy, strict validation boundaries, and clean client-server delegation**:
-- **Clean Architecture**: Decomposed UI code from business logic and telemetry. All AI configurations, custom prompt generation rules, and stream parsers are isolated in `@/lib/ai/` and `@/lib/security/`.
+- **Clean Architecture**: Decomposed UI code from business logic and telemetry. All AI configurations, custom prompt generation rules, and stream parsers are isolated in `@/services/ai/` and `@/services/security/`.
 - **Validation Boundaries**: Every client action and server-side request passes through type-safe `Zod` schemas, preventing payload corruption.
 - **Security Interceptors (`PromptGuard`)**: Implemented prompt injection pattern classifiers to block adversarial prompt overrides before the message context reaches the LLM.
 - **Edge Middleware Filters**: Activated edge-level route validation (`middleware.ts`) to intercept request payload sizes (>256KB) and inject strict security headers (CSP, HSTS).
@@ -344,7 +344,7 @@ Here are the side-by-side desktop and mobile screenshot previews for all pages i
 
 | Layer | Technology | Rationale |
 | :--- | :--- | :--- |
-| **Framework** | Next.js 15 (App Router) | Server components + API routes + standalone Docker output. |
+| **Framework** | Next.js 16 (App Router) | Server components + API routes + standalone Docker output. |
 | **Language** | TypeScript (Strict Mode) | Type-safety across state, Zod schemas, and API contracts. |
 | **State** | React Context API | Lightweight context that updates UI rendering based on mock simulation feeds. |
 | **Validation** | Zod | Single schema used on both client forms and server API routes. |
@@ -377,12 +377,17 @@ Here are the side-by-side desktop and mobile screenshot previews for all pages i
 │   │   ├── nav/          # Sidebar, MobileNav, MobileHeader, Logo
 │   │   ├── theme/        # ThemeProvider (Dark / Light context)
 │   │   └── ui/           # Design System primitives (Button, Dialog, Toast, ScrollReveal…)
-│   └── lib/
-│       ├── ai/           # LLM config, prompt builder, SSE parser
-│       ├── security/     # Security headers & XSS sanitizers
+│   ├── services/         # AI compilation, security guards, carbon factors
+│   │   ├── ai/
+│   │   ├── security/
+│   │   └── emissions/
+│   ├── store/            # React context & store logic
+│   └── utils/            # General utilities & styling hooks
+│   └── contexts/         # Persona & Context Providers
+│   └── hooks/            # Shared react hooks
 ├── playwright.config.ts
 ├── tsconfig.json
-└── vitest.config.ts
+└── vitest.config.mts
 ```
 
 ---

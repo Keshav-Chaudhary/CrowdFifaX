@@ -12,9 +12,9 @@ This document outlines the systematic, zero-regression architectural refactoring
 
 ## 🛑 Zero-Regression Constraints
 To guarantee that Security and Efficiency scores did not regress, the following systems were **strictly frozen** and untouched during the recovery:
-1. `middleware.ts` (Headers, CSP, HSTS, Rate Limiting)
-2. `lib/emissions/calculate.ts` & `lib/emissions/coefficients.ts` (Business logic)
-3. `lib/store/carbon-store.ts` (Zustand schemas & persistence mechanisms)
+1. `src/middleware.ts` (Headers, CSP, HSTS, Rate Limiting)
+2. `src/services/emissions/calculate.ts` & `src/services/emissions/factors.ts` (Business logic)
+3. `src/store/carbon-store.ts` (Zustand schemas & persistence mechanisms)
 4. API Contracts and Authentication flows.
 5. Next.js App Router definitions and server/client boundaries.
 
