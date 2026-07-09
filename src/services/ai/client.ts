@@ -35,7 +35,7 @@ async function* tryModelStream(
   messages: CompletionMessage[],
   config: AIConfig,
   signal: AbortSignal,
-): AsyncGenerator<string, boolean, unknown> {
+): AsyncGenerator<string, void, unknown> {
   const response = await fetch(`${config.baseURL}/chat/completions`, {
     method: "POST",
     headers: {
@@ -53,11 +53,10 @@ async function* tryModelStream(
   });
 
   if (!response.ok || !response.body) {
-    return false;
+    throw new Error(`Model ${model} returned HTTP error ${response.status}`);
   }
 
   yield* parseSSEStream(response.body);
-  return true;
 }
 
 /**
@@ -78,14 +77,11 @@ export async function* streamChat(
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), config.timeoutMs);
     try {
-      let succeeded = false;
       const gen = tryModelStream(model, messages, config, controller.signal);
       for await (const chunk of gen) {
-        if (typeof chunk === "string") yield chunk;
-        else succeeded = chunk;
+        yield chunk;
       }
-      if (succeeded) return;
-      lastError = new Error(`Model ${model} returned HTTP error`);
+      return;
     } catch (error) {
       lastError = error;
     } finally {

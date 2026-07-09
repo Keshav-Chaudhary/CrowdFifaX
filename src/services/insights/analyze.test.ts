@@ -51,7 +51,7 @@ describe("analyzeFootprint", () => {
       { id: "1", factorId: "transit_subway", quantity: 3, date: day(1) },
     ];
     const analysis = analyzeFootprint(activities);
-    const insight = analysis.insights.find((i) => i.id === "diet-subway-surge");
+    const insight = analysis.insights.find((i) => i.id === "ops-subway-surge");
     expect(insight).toBeDefined();
     expect(insight?.level).toBe("opportunity");
     // 3 * (6.6 - 1.8) = 14.4
@@ -62,7 +62,7 @@ describe("analyzeFootprint", () => {
     const analysis = analyzeFootprint([
       { id: "1", factorId: "gate_standard", quantity: 100, date: day(1) },
     ]);
-    const insight = analysis.insights.find((i) => i.id === "transport-gate-redirect");
+    const insight = analysis.insights.find((i) => i.id === "ops-gate-redirect");
     expect(insight).toBeDefined();
     expect(insight?.potentialSavingKg).toBeGreaterThan(0);
   });
@@ -73,7 +73,7 @@ describe("analyzeFootprint", () => {
     ]);
     const win = analysis.insights.find((i) => i.level === "win");
     expect(win).toBeDefined();
-    expect(win?.id).toBe("transport-ingress-win");
+    expect(win?.id).toBe("ops-ingress-win");
   });
 
   it("orders opportunities by descending potential saving", () => {
